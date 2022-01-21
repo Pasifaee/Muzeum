@@ -8,15 +8,21 @@ class Instytucja(models.Model):
     def __str__(self):
         return self.nazwa
 
+    class Meta:
+        verbose_name_plural = "instytucje"
+
 
 class Artysta(models.Model):
     imie = models.CharField(max_length=200)
     nazwisko = models.CharField(max_length=200)
-    rok_urodzenia = models.PositiveSmallIntegerField
+    rok_urodzenia = models.PositiveSmallIntegerField(blank=False, null=False)
     rok_smierci = models.PositiveSmallIntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.imie + " " + self.nazwisko
+
+    class Meta:
+        verbose_name_plural = "artysci"
 
 
 class Eksponat(models.Model):
@@ -33,34 +39,43 @@ class Eksponat(models.Model):
     autor = models.ForeignKey(Artysta, blank=True, null=True, on_delete=models.SET_NULL)
     tytul = models.CharField(max_length=200)
     typ = models.CharField(max_length=10, choices=TypEksponatu.choices)
-    wypozyczalny = models.BooleanField
+    wypozyczalny = models.BooleanField(default=True, blank=False, null=False)
     stan = models.CharField(max_length=20, choices=Stan.choices)
-    id_wypozyczenia = models.PositiveIntegerField(blank=True, null=True)
-    id_ekspozycji = models.PositiveIntegerField(blank=True, null=True)
-    szerokosc = models.PositiveIntegerField
-    wysokosc = models.PositiveIntegerField
-    waga = models.PositiveIntegerField
+    id_wypozyczenia = models.PositiveIntegerField(blank=True, null=True, default=None)
+    id_ekspozycji = models.PositiveIntegerField(blank=True, null=True, default=None)
+    szerokosc = models.PositiveIntegerField(default=0, blank=False, null=False)
+    wysokosc = models.PositiveIntegerField(default=0, blank=False, null=False)
+    waga = models.PositiveIntegerField(default=0, blank=False, null=False)
 
     def __str__(self):
         return self.tytul
 
+    class Meta:
+        verbose_name_plural = "eksponaty"
+
 
 class Wypozyczenie(models.Model):
-    id_eksponatu = models.ForeignKey(Eksponat, on_delete=models.DO_NOTHING)
-    id_instytucji = models.ForeignKey(Instytucja, on_delete=models.DO_NOTHING)
-    poczatek = models.DateField
-    koniec = models.DateField
+    eksponat = models.ForeignKey(Eksponat, on_delete=models.DO_NOTHING)
+    instytucja = models.ForeignKey(Instytucja, on_delete=models.DO_NOTHING)
+    poczatek = models.DateField(blank=False, null=False)
+    koniec = models.DateField(blank=False, null=False)
 
     def __str__(self):
-        return self.id_instytucji.nazwa + ", " + self.id_eksponatu.tytul
+        return self.instytucja.nazwa + ", " + self.eksponat.tytul + ", " + str(self.poczatek)
+
+    class Meta:
+        verbose_name_plural = "wypozyczenia"
 
 
 class Ekspozycja(models.Model):
-    id_eksponatu = models.ForeignKey(Eksponat, on_delete=models.DO_NOTHING)
+    eksponat = models.ForeignKey(Eksponat, on_delete=models.DO_NOTHING)
     galeria = models.CharField(max_length=200)
     sala = models.CharField(max_length=200)
-    poczatek = models.DateField
-    koniec = models.DateField
+    poczatek = models.DateField(blank=False, null=False)
+    koniec = models.DateField(blank=False, null=False)
 
     def __str__(self):
-        return self.galeria + ", " + self.id_eksponatu.tytul
+        return self.galeria + ", " + self.eksponat.tytul
+
+    class Meta:
+        verbose_name_plural = "ekspozycje"
