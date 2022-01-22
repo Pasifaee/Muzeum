@@ -7,14 +7,27 @@ admin.site.site_header = 'Administracja muzeum'
 
 class EkspozycjaAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
+    search_fields = ['eksponat__tytul', 'eksponat__autor__imie', 'eksponat__autor__nazwisko']
+    list_filter = ['poczatek', 'koniec', 'galeria', 'sala']
 
 
 class WypozyczenieAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
+    search_fields = ['eksponat__tytul', 'instytucja__nazwa', 'eksponat__autor__imie', 'eksponat__autor__nazwisko']
+    list_filter = ['poczatek', 'koniec', 'eksponat__tytul', 'instytucja__nazwa']
+
+
+class EksponatAdmin(admin.ModelAdmin):
+    search_fields = ['tytul', 'autor__imie', 'autor__nazwisko']
+    list_filter = ['typ', 'stan']
+
+
+class ArtystaAdmin(admin.ModelAdmin):
+    search_fields = ['imie', 'nazwisko']
 
 
 admin.site.register(Ekspozycja, EkspozycjaAdmin)
 admin.site.register(Wypozyczenie, WypozyczenieAdmin)
-admin.site.register(Eksponat)
-admin.site.register(Artysta)
+admin.site.register(Eksponat, EksponatAdmin)
+admin.site.register(Artysta, ArtystaAdmin)
 admin.site.register(Instytucja)

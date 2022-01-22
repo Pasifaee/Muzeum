@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Instytucja(models.Model):
-    nazwa = models.CharField(max_length=200)
+    nazwa = models.CharField(max_length=200, verbose_name="nazwa instytucji")
     miasto = models.CharField(max_length=200)
 
     def __str__(self):
@@ -37,7 +37,7 @@ class Eksponat(models.Model):
         W_MAGAZYNIE = 'w magazynie'
 
     autor = models.ForeignKey(Artysta, blank=True, null=True, on_delete=models.SET_NULL)
-    tytul = models.CharField(max_length=200)
+    tytul = models.CharField(max_length=200, verbose_name="tytul eksponatu")
     typ = models.CharField(max_length=10, choices=TypEksponatu.choices)
     wypozyczalny = models.BooleanField(default=True, blank=False, null=False)
     stan = models.CharField(max_length=20, choices=Stan.choices)
@@ -61,7 +61,7 @@ class Wypozyczenie(models.Model):
     koniec = models.DateField(blank=False, null=False)
 
     def __str__(self):
-        return self.instytucja.nazwa + ", " + self.eksponat.tytul + ", " + str(self.poczatek)
+        return self.instytucja.nazwa + ", " + self.eksponat.tytul + ", " + str(self.poczatek) + ' - ' + str(self.koniec)
 
     class Meta:
         verbose_name_plural = "wypozyczenia"
