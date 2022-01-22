@@ -7,7 +7,7 @@ admin.site.site_header = 'Administracja muzeum'
 
 class EkspozycjaAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
-    search_fields = ['eksponat__tytul', 'eksponat__autor__imie', 'eksponat__autor__nazwisko']
+    search_fields = ['id', 'eksponat__tytul', 'eksponat__autor__imie', 'eksponat__autor__nazwisko']
     list_filter = ['poczatek', 'koniec', 'galeria', 'sala']
 
     def has_delete_permission(self, request, obj=None):
@@ -16,7 +16,7 @@ class EkspozycjaAdmin(admin.ModelAdmin):
 
 class WypozyczenieAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
-    search_fields = ['eksponat__tytul', 'instytucja__nazwa', 'eksponat__autor__imie', 'eksponat__autor__nazwisko']
+    search_fields = ['id', 'eksponat__tytul', 'instytucja__nazwa', 'eksponat__autor__imie', 'eksponat__autor__nazwisko']
     list_filter = ['poczatek', 'koniec', 'eksponat__tytul', 'instytucja__nazwa']
 
     def has_delete_permission(self, request, obj=None):
