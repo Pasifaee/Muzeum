@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  {% if loans_list %}
+    <ul>
+    {% for loan in loans_list %}
+        <li><strong>{{ loan.eksponat }}</strong>; {{ loan.instytucja }}: {{ loan.poczatek }} - {{ loan.koniec }}</li>
+    {% endfor %}
+    </ul>
+  {% else %}
+      <p>Nie ma wypożyczeń spełniających podane kryteria.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  {% if exhibitions_list %}
+    <ul>
+    {% for exhibition in exhibitions_list %}
+        <li><strong>{{ exhibition.eksponat }}</strong>; {{ exhibition.galeria }}, {{ exhibition.sala }}</li>
+    {% endfor %}
+    </ul>
+  {% else %}
+      <p>Nie ma ekspozycji spełniających podane kryteria.</p>
+  {% endif %}
+{% endblock %}
