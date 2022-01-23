@@ -1,4 +1,7 @@
 from django.db import models
+from django import forms
+from django.contrib import messages
+import warnings
 
 
 class Instytucja(models.Model):
@@ -7,6 +10,10 @@ class Instytucja(models.Model):
 
     def __str__(self):
         return self.nazwa
+
+    # def clean(self):
+    #     if self.nazwa == "a":
+    #         raise forms.ValidationError("Hehe")
 
     class Meta:
         verbose_name_plural = "instytucje"
