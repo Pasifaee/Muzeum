@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Artyści</h1>
+  {% if artist_list %}
+  <ul>
+    {% for artist in artist_list %}
+      <li>
+        {{ artist.imie }} {{artist.nazwisko}} ({{ artist.rok_urodzenia }}-{{ artist.rok_smierci }})
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>W muzeum nie ma żadnych dzieł, których artysta jest znany.</p>
+  {% endif %}
+{% endblock %}
