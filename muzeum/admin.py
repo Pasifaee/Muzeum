@@ -126,7 +126,6 @@ def wypozyczony_check(id_w, id_e, tytul):
             "Eksponat nie może być aktualnie wypożyczony: niezgodność dzisiejszej daty z okresem wypożyczenia.")
 
 
-@admin.register(Eksponat)
 class EksponatForm(ModelForm):
     def clean(self):
         stan = self.cleaned_data['stan']
@@ -140,6 +139,7 @@ class EksponatForm(ModelForm):
         # TODO dokończyć + refactor
 
 
+@admin.register(Eksponat)
 class EksponatAdmin(admin.ModelAdmin):
     form = EksponatForm
     search_fields = ['tytul', 'autor__imie', 'autor__nazwisko']
