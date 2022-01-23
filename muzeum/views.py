@@ -29,6 +29,8 @@ def search_exhibits(request):
         if form.is_valid():
             name = form.cleaned_data['author_name']
             surname = form.cleaned_data['author_surname']
+            if not name: name = 'blank'
+            if not surname: surname = 'blank'
             state = form.cleaned_data['state']
             url = reverse('pokaz_eksponaty', kwargs={'name': name, 'surname': surname, 'state': state})
             # redirect to a new URL:
@@ -73,8 +75,15 @@ def search_exhibitions(request):
             exhibit = form.cleaned_data['exhibit']
             name = form.cleaned_data['author_name']
             surname = form.cleaned_data['author_surname']
+            if not exhibit: exhibit = 'blank'
+            if not name: name = 'blank'
+            if not surname: surname = 'blank'
             date = form.cleaned_data['date']
-            url = reverse('pokaz_ekspozycje', kwargs={'exhibit': exhibit, 'name': name, 'surname': surname, 'date': date})
+            if not date:
+                url = reverse('pokaz_ekspozycje',
+                              kwargs={'exhibit': exhibit, 'name': name, 'surname': surname})
+            else:
+                url = reverse('pokaz_ekspozycje_data', kwargs={'exhibit': exhibit, 'name': name, 'surname': surname, 'date': date})
             # redirect to a new URL:
             return HttpResponseRedirect(url)
 
@@ -89,7 +98,7 @@ def search_exhibitions(request):
     return render(request, 'muzeum/ekspozycje.html', context)
 
 
-def show_exhibitions(request, exhibit, name, surname, date):
+def show_exhibitions(request, exhibit, name, surname, date=None):
     exhibitions_list = Ekspozycja.objects.all()
 
     # Trzeba tu dodać przefiltrowanie exhibitions_list na podstawie argumentów
@@ -114,8 +123,14 @@ def search_loans(request):
             exhibit = form.cleaned_data['exhibit']
             name = form.cleaned_data['author_name']
             surname = form.cleaned_data['author_surname']
+            if not exhibit: exhibit = 'blank'
+            if not name: name = 'blank'
+            if not surname: surname = 'blank'
             date = form.cleaned_data['date']
-            url = reverse('pokaz_wypozyczenia', kwargs={'exhibit': exhibit, 'name': name, 'surname': surname, 'date': date})
+            if not date:
+                url = reverse('pokaz_wypozyczenia', kwargs={'exhibit': exhibit, 'name': name, 'surname': surname})
+            else:
+                url = reverse('pokaz_wypozyczenia_data', kwargs={'exhibit': exhibit, 'name': name, 'surname': surname, 'date': date})
             # redirect to a new URL:
             return HttpResponseRedirect(url)
 
@@ -130,7 +145,7 @@ def search_loans(request):
     return render(request, 'muzeum/wypozyczenia.html', context)
 
 
-def show_loans(request, exhibit, name, surname, date):
+def show_loans(request, exhibit, name, surname, date=None):
     loans_list = Wypozyczenie.objects.all()
 
     # Trzeba tu dodać przefiltrowanie loans_list na podstawie argumentów

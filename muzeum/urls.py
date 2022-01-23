@@ -19,7 +19,9 @@ urlpatterns = [
     path('eksponaty/', views.search_exhibits, name='szukaj_eksponaty'),
     path('eksponaty/<str:name>/<str:surname>/<str:state>/', views.show_exhibits, name='pokaz_eksponaty'),
     path('ekspozycje/', views.search_exhibitions, name='szukaj_ekspozycje'),
-    path('ekspozycje/<str:exhibit>/<str:name>/<str:surname>/<yyyy:date>/', views.show_exhibitions, name='pokaz_ekspozycje'),
+    path('ekspozycje/<str:exhibit>/<str:name>/<str:surname>/', views.show_exhibitions, name='pokaz_ekspozycje'),
+    path('ekspozycje/<str:exhibit>/<str:name>/<str:surname>/<yyyy:date>/', views.show_exhibitions, name='pokaz_ekspozycje_data'),
     path('wypozyczenia/', views.search_loans, name='szukaj_wypozyczenia'),
-    path('wypozyczenia/<str:exhibit>/<str:name>/<str:surname>/<yyyy:date>/', views.show_loans, name='pokaz_wypozyczenia'),
+    path('wypozyczenia/<str:exhibit>/<str:name>/<str:surname>/', views.show_loans, name='pokaz_wypozyczenia'),
+    path('wypozyczenia/<str:exhibit>/<str:name>/<str:surname>/<yyyy:date>/', views.show_loans, name='pokaz_wypozyczenia_data'),
 ]
