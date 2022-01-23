@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  {% if exhibits_list %}
+    <ul>
+    {% for exhibit in exhibits_list %}
+        <li>{{ exhibit.tytul }}</li>
+    {% endfor %}
+    </ul>
+  {% else %}
+      <p>Nie ma eksponatów spełniających podane kryteria.</p>
+  {% endif %}
+{% endblock %}
