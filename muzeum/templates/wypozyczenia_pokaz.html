@@ -3,11 +3,12 @@
 {% block content %}
   {% if loans_list %}
     <ul>
-    {% for loan in loans_list %}
-        <li><strong>{{ loan.eksponat }}</strong>; {{ loan.instytucja }}: {{ loan.poczatek }} - {{ loan.koniec }}</li>
+    {% for loan, author in loans_list %}
+        <li>{{ loan.instytucja }}: {{ loan.poczatek }} - {{ loan.koniec }}<br>
+            <i>{{ loan.eksponat }}, {{ author.imie }} {{ author.nazwisko }}</i></li>
     {% endfor %}
     </ul>
   {% else %}
-      <p>Nie ma wypożyczeń spełniających podane kryteria.</p>
+      <p>Nie ma wypożyczeń spełniających podane kryteria. Aby zobaczyć wszystkie wypożyczenia pozostaw puste filtry.</p>
   {% endif %}
 {% endblock %}

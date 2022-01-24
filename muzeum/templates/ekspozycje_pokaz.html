@@ -3,11 +3,12 @@
 {% block content %}
   {% if exhibitions_list %}
     <ul>
-    {% for exhibition in exhibitions_list %}
-        <li><strong>{{ exhibition.eksponat }}</strong>; {{ exhibition.galeria }}, {{ exhibition.sala }}</li>
+    {% for exhibition, author in exhibitions_list %}
+        <li>{{ exhibition.galeria }}, {{ exhibition.sala }}: {{ exhibition.poczatek }} - {{ exhibition.koniec }}<br>
+            <i>{{ exhibition.eksponat }}, {{ author.imie }} {{ author.nazwisko }}</i></li>
     {% endfor %}
     </ul>
   {% else %}
-      <p>Nie ma ekspozycji spełniających podane kryteria.</p>
+      <p>Nie ma ekspozycji spełniających podane kryteria. Aby zobaczyć wszystkie ekspozycje pozostaw puste filtry.</p>
   {% endif %}
 {% endblock %}

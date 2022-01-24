@@ -1,7 +1,9 @@
+from datetime import datetime
 from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.db.models import Q
 from .models import Artysta, Eksponat, Ekspozycja, Wypozyczenie
 from .forms import SearchExhibitsForm, SearchExhibitionsForm, SearchLoansForm
 
@@ -55,7 +57,6 @@ def show_exhibits(request, name, surname, state):
         authors = authors.filter(imie__icontains=name)
     if surname != 'blank':
         authors = authors.filter(nazwisko__icontains=surname)
-
     if name != 'blank' or surname != 'blank':
         exhibits_list = exhibits_list.filter(autor_id__in=authors)
 
@@ -113,10 +114,33 @@ def search_exhibitions(request):
 def show_exhibitions(request, exhibit, name, surname, date=None):
     exhibitions_list = Ekspozycja.objects.all()
 
-    # Trzeba tu dodać przefiltrowanie exhibitions_list na podstawie argumentów
+    exhibits_list = Eksponat.objects.all()
+    if exhibit != 'blank':
+        exhibits_list = exhibits_list.filter(tytul__icontains=exhibit)
+        exhibitions_list = exhibitions_list.filter(eksponat_id__in=exhibits_list)
+    authors = Artysta.objects.all()
+    if name != 'blank':
+        authors = authors.filter(imie__icontains=name)
+    if surname != 'blank':
+        authors = authors.filter(nazwisko__icontains=surname)
+    if name != 'blank' or surname != 'blank':
+        exhibitions_list = exhibitions_list.filter(eksponat__autor_id__in=authors)
+
+    # Bierz tylko teraźniejsze / przyszłe ekspozycje
+    exhibitions_list = exhibitions_list.filter(Q(koniec__isnull=True) | Q(koniec__gte=datetime.today()))
+    # Bierz ekspozycje trwające w podanej dacie
+    if date:
+        exhibitions_list = exhibitions_list.filter(Q(poczatek__isnull=True) | Q(poczatek__lte=date))
+        exhibitions_list = exhibitions_list.filter(Q(koniec__isnull=True) | Q(koniec__gte=date))
+
+    exhibitions_list_full = []
+    for exhibition in exhibitions_list:
+        exhibit = exhibits_list.get(id=exhibition.eksponat_id)
+        author = authors.get(id=exhibit.autor_id)
+        exhibitions_list_full.append([exhibition, author])
 
     context = {
-        'exhibitions_list': exhibitions_list,
+        'exhibitions_list': exhibitions_list_full,
     }
 
     return render(request, 'ekspozycje_pokaz.html', context)
@@ -160,10 +184,33 @@ def search_loans(request):
 def show_loans(request, exhibit, name, surname, date=None):
     loans_list = Wypozyczenie.objects.all()
 
-    # Trzeba tu dodać przefiltrowanie loans_list na podstawie argumentów
+    exhibits_list = Eksponat.objects.all()
+    if exhibit != 'blank':
+        exhibits_list = exhibits_list.filter(tytul__icontains=exhibit)
+        loans_list = loans_list.filter(eksponat_id__in=exhibits_list)
+    authors = Artysta.objects.all()
+    if name != 'blank':
+        authors = authors.filter(imie__icontains=name)
+    if surname != 'blank':
+        authors = authors.filter(nazwisko__icontains=surname)
+    if name != 'blank' or surname != 'blank':
+        loans_list = loans_list.filter(eksponat__autor_id__in=authors)
+
+    # Bierz tylko teraźniejsze / przyszłe wypożyczenia
+    loans_list = loans_list.filter(koniec__gte=datetime.today())
+    # Bierz ekspozycje trwające w podanej dacie
+    if date:
+        loans_list = loans_list.filter(poczatek__lte=date)
+        loans_list = loans_list.filter(koniec__gte=date)
+
+    loans_list_full = []
+    for loan in loans_list:
+        exhibit = exhibits_list.get(id=loan.eksponat_id)
+        author = authors.get(id=exhibit.autor_id)
+        loans_list_full.append([loan, author])
 
     context = {
-        'loans_list': loans_list,
+        'loans_list': loans_list_full,
     }
 
     return render(request, 'wypozyczenia_pokaz.html', context)
