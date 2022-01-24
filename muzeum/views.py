@@ -50,13 +50,25 @@ def search_exhibits(request):
 def show_exhibits(request, name, surname, state):
     exhibits_list = Eksponat.objects.all()
 
-    ## Losowy przykład manipulowania wynikiem w zależności od danych wejściowych (w tym wypadku od name)
-    if state == 'w ekspozycji':
-        exhibits_list = exhibits_list.filter(tytul__exact="whatever")
-    ## Trzeba będzie go zastąpić sensownym filtrowaniem wyników.
+    authors = Artysta.objects.all()
+    if name != 'blank':
+        authors = authors.filter(imie__icontains=name)
+    if surname != 'blank':
+        authors = authors.filter(nazwisko__icontains=surname)
+
+    if name != 'blank' or surname != 'blank':
+        exhibits_list = exhibits_list.filter(autor_id__in=authors)
+
+    if state != 'dowolny':
+        exhibits_list = exhibits_list.filter(stan__exact=state)
+
+    exhibits_list_full = []
+    for exhibit in exhibits_list:
+        author = authors.get(id=exhibit.autor_id)
+        exhibits_list_full.append([exhibit, author])
 
     context = {
-        'exhibits_list': exhibits_list,
+        'exhibits_list': exhibits_list_full,
     }
 
     return render(request, 'eksponaty_pokaz.html', context)

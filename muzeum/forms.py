@@ -1,7 +1,7 @@
 import datetime
 from django import forms
 
-STATE_CHOICES = (('wypozyczony', 'wypozyczony'), ('w ekspozycji', 'w ekspozycji'), ('w magazynie', 'w magazynie'))
+STATE_CHOICES = (('dowolny', 'dowolny'), ('wypozyczony', 'wypozyczony'), ('w ekspozycji', 'w ekspozycji'), ('w magazynie', 'w magazynie'))
 class SearchExhibitsForm(forms.Form):
     author_name = forms.CharField(label='Imię autora', required=False)
     author_surname = forms.CharField(label='Nazwisko autora', required=False)

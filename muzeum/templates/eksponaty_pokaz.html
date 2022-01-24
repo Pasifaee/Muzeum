@@ -3,8 +3,8 @@
 {% block content %}
   {% if exhibits_list %}
     <ul>
-    {% for exhibit in exhibits_list %}
-        <li>{{ exhibit.tytul }}</li>
+    {% for exhibit, author in exhibits_list %}
+        <li><strong>{{ exhibit.tytul }}</strong>, {{ author.imie }} {{ author.nazwisko }}; <i>stan:</i> {{ exhibit.stan }}</li>
     {% endfor %}
     </ul>
   {% else %}
