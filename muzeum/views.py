@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Q
 from .models import Artysta, Eksponat, Ekspozycja, Wypozyczenie
-from .forms import SearchExhibitsForm, SearchExhibitionsForm, SearchLoansForm
+from .forms import SearchExhibitsForm, SearchExhibitionsForm, SearchLoansForm, SearchArtistsForm
 
 
 def index(request):
@@ -13,10 +13,47 @@ def index(request):
     return render(request, 'index.html')
 
 
-class ArtistListView(generic.ListView):
-    model = Artysta
-    context_object_name = 'artist_list'
-    template_name = 'muzeum/artysci.html'
+def search_artists(request):
+    """Strona dla przeszukujących dane o eksponatach."""
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = SearchArtistsForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            name = form.cleaned_data['artist_name']
+            surname = form.cleaned_data['artist_surname']
+            if not name: name = 'blank'
+            if not surname: surname = 'blank'
+            url = reverse('pokaz_artysci', kwargs={'name': name, 'surname': surname})
+            # redirect to a new URL:
+            return HttpResponseRedirect(url)
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = SearchArtistsForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'muzeum/artysci.html', context)
+
+def show_artists(request, name, surname):
+    artists_list = Artysta.objects.all()
+
+    if name != 'blank':
+        artists_list = artists_list.filter(imie__icontains=name)
+    if surname != 'blank':
+        artists_list = artists_list.filter(nazwisko__icontains=surname)
+
+    context = {
+        'artists_list': artists_list,
+    }
+
+    return render(request, 'artysci_pokaz.html', context)
 
 
 def search_exhibits(request):
@@ -29,12 +66,15 @@ def search_exhibits(request):
 
         # Check if the form is valid:
         if form.is_valid():
+            exhibit = form.cleaned_data['exhibit_name']
             name = form.cleaned_data['author_name']
             surname = form.cleaned_data['author_surname']
+            if not exhibit: exhibit = 'blank'
             if not name: name = 'blank'
             if not surname: surname = 'blank'
             state = form.cleaned_data['state']
-            url = reverse('pokaz_eksponaty', kwargs={'name': name, 'surname': surname, 'state': state})
+            type = form.cleaned_data['type']
+            url = reverse('pokaz_eksponaty', kwargs={'exhibit': exhibit, 'name': name, 'surname': surname, 'type': type, 'state': state})
             # redirect to a new URL:
             return HttpResponseRedirect(url)
 
@@ -49,10 +89,12 @@ def search_exhibits(request):
     return render(request, 'muzeum/eksponaty.html', context)
 
 
-def show_exhibits(request, name, surname, state):
+def show_exhibits(request, exhibit, name, surname, type, state):
     exhibits_list = Eksponat.objects.all()
 
     authors = Artysta.objects.all()
+    if exhibit != 'blank':
+        exhibits_list = exhibits_list.filter(tytul__icontains=exhibit)
     if name != 'blank':
         authors = authors.filter(imie__icontains=name)
     if surname != 'blank':
@@ -60,13 +102,18 @@ def show_exhibits(request, name, surname, state):
     if name != 'blank' or surname != 'blank':
         exhibits_list = exhibits_list.filter(autor_id__in=authors)
 
+    if type != 'dowolny':
+        exhibits_list = exhibits_list.filter(typ__exact=type)
     if state != 'dowolny':
         exhibits_list = exhibits_list.filter(stan__exact=state)
 
     exhibits_list_full = []
-    for exhibit in exhibits_list:
-        author = authors.get(id=exhibit.autor_id)
-        exhibits_list_full.append([exhibit, author])
+    for ex in exhibits_list:
+        if ex.autor_id:
+            author = authors.get(id=ex.autor_id)
+        else:
+            author = None
+        exhibits_list_full.append([ex, author])
 
     context = {
         'exhibits_list': exhibits_list_full,

@@ -4,7 +4,16 @@
   {% if exhibits_list %}
     <ul>
     {% for exhibit, author in exhibits_list %}
-        <li><strong>{{ exhibit.tytul }}</strong>, {{ author.imie }} {{ author.nazwisko }}; <i>stan:</i> {{ exhibit.stan }}</li>
+        <li><strong>{{ exhibit.tytul }}</strong>,
+            {% if exhibit.autor %}
+                {{ author.imie }} {{ author.nazwisko }}
+            {% else %}
+                Autor nieznany
+            {% endif %}
+        <br>
+            <i>rodzaj:</i> {{ exhibit.typ }};
+            <i>wymiary:</i> {{ exhibit.szerokosc }}x{{ exhibit.wysokosc }}; <i>waga:</i> {{ exhibit.waga }}kg;
+            <i>stan:</i> {{ exhibit.stan }}</li>
     {% endfor %}
     </ul>
   {% else %}

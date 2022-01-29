@@ -1,16 +1,13 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>Artyści</h1>
-  {% if artist_list %}
-  <ul>
-    {% for artist in artist_list %}
-      <li>
-        {{ artist.imie }} {{artist.nazwisko}} ({{ artist.rok_urodzenia }}-{{ artist.rok_smierci }})
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>W muzeum nie ma żadnych dzieł, których artysta jest znany.</p>
-  {% endif %}
+  <h1>Wyszukaj artystów.</h1>
+  Filtry:
+  <form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Szukaj">
+  </form>
 {% endblock %}
