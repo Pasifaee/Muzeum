@@ -105,8 +105,8 @@ class WypozyczenieAdmin(admin.ModelAdmin):
                      'eksponat__autor__nazwisko']
     list_filter = ['poczatek', 'koniec', 'eksponat__tytul', 'instytucja__nazwa']
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 def magazyn_check(tytul):
@@ -170,12 +170,13 @@ class EksponatForm(ModelForm):
 
 @admin.register(Eksponat)
 class EksponatAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
     form = EksponatForm
     search_fields = ['tytul', 'autor__imie', 'autor__nazwisko']
     list_filter = ['typ', 'stan']
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 @admin.register(Artysta)
@@ -183,8 +184,8 @@ class ArtystaAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
     search_fields = ['imie', 'nazwisko']
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    # def has_delete_permission(self, request, obj=None):
+    #     return False
 
 
 @admin.register(Instytucja)
