@@ -3,6 +3,9 @@ from django import forms
 from django.contrib import messages
 import warnings
 
+# class Galeria(models.Model):
+#     nazwa = models.CharField(max_length=200, verbose_name="nazwa galerii")
+
 
 class Instytucja(models.Model):
     nazwa = models.CharField(max_length=200, verbose_name="nazwa instytucji")
@@ -11,9 +14,6 @@ class Instytucja(models.Model):
     def __str__(self):
         return self.nazwa
 
-    # def clean(self):
-    #     if self.nazwa == "a":
-    #         raise forms.ValidationError("Hehe")
 
     class Meta:
         verbose_name_plural = "instytucje"
@@ -29,17 +29,17 @@ class Artysta(models.Model):
         return self.imie + " " + self.nazwisko
 
     class Meta:
-        verbose_name_plural = "artysci"
+        verbose_name_plural = "artyści"
 
 
 class Eksponat(models.Model):
     class TypEksponatu(models.TextChoices):
-        RZEZBA = 'rzezba'
+        RZEZBA = 'rzeźba'
         OBRAZ = 'obraz'
         INNY = 'inny'
 
     class Stan(models.TextChoices):
-        WYPOZYCZONY = 'wypozyczony'
+        WYPOZYCZONY = 'wypożyczony'
         W_EKSPOZYCJI = 'w ekspozycji'
         W_MAGAZYNIE = 'w magazynie'
 
@@ -71,7 +71,7 @@ class Wypozyczenie(models.Model):
         return self.instytucja.nazwa + ", " + self.eksponat.tytul + ", " + str(self.poczatek) + ' - ' + str(self.koniec)
 
     class Meta:
-        verbose_name_plural = "wypozyczenia"
+        verbose_name_plural = "wypożyczenia"
 
 
 class Ekspozycja(models.Model):

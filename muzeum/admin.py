@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib import admin
 from django.forms import forms, ModelForm
+from django.contrib.auth.models import Group, User
 
 from .models import Eksponat, Artysta, Ekspozycja, Wypozyczenie, Instytucja
 
@@ -108,7 +109,32 @@ class WypozyczenieAdmin(admin.ModelAdmin):
         return False
 
 
-# to co prawda działa, ale jest absolutnie brzydkie, PRZEPRASZAM
+def magazyn_check(tytul):
+    if len(Wypozyczenie.objects.filter(poczatek__lte=datetime.date.today(), koniec__gte=datetime.date.today(),
+                                       eksponat__tytul=tytul)) > 0:
+        raise forms.ValidationError("Nie można umieścić obiektu w magazynie, ponieważ jest aktualnie wypożyczony.")
+    if len(Ekspozycja.objects.filter(poczatek__lte=datetime.date.today(), koniec__gte=datetime.date.today(),
+                                     eksponat__tytul=tytul)) > 0:
+        raise forms.ValidationError("Nie można umieścić obiektu w magazynie, ponieważ aktualnie jest na ekspozycji.")
+
+
+def ekspozycja_check(id_w, id_e, tytul):
+    if id_w is not None:
+        raise forms.ValidationError("Dzieło na ekspozycji nie może mieć identyfikatora wypożyczenia.")
+    if id_e is None:
+        raise forms.ValidationError("Dzieło na ekspozycji musi posiadać identyfikator ekspozycji.")
+    try:
+        iksde = Ekspozycja.objects.get(pk=id_w)
+    except Ekspozycja.DoesNotExist:
+        raise forms.ValidationError("Nieprawidłowy identyfikator ekspozycji: identyfikator nie istnieje.")
+    if iksde.eksponat.tytul != tytul:
+        raise forms.ValidationError(
+            "Nieprawidłowy identyfikator ekspozycji: ekspozycja musi dotyczyć wybranego eksponatu.")
+    if datetime.date.today() < iksde.poczatek or datetime.date.today() > iksde.koniec:
+        raise forms.ValidationError(
+            "Dzieło nie może być aktualnie na ekspozycji: niezgodność dzisiejszej daty z okresem ekspozycji.")
+
+
 def wypozyczony_check(id_w, id_e, tytul):
     if id_e is not None:
         raise forms.ValidationError("Wypożyczony eksponat nie może mieć identyfikatora ekspozycji.")
@@ -129,14 +155,17 @@ def wypozyczony_check(id_w, id_e, tytul):
 class EksponatForm(ModelForm):
     def clean(self):
         stan = self.cleaned_data['stan']
-        if stan == 'wypozyczony':
-            id_w = self.cleaned_data['id_wypozyczenia']
-            id_e = self.cleaned_data['id_ekspozycji']
-            tytul = self.cleaned_data['tytul']
+        id_w = self.cleaned_data['id_wypozyczenia']
+        id_e = self.cleaned_data['id_ekspozycji']
+        tytul = self.cleaned_data['tytul']
+        if stan == 'wypożyczony':
             if not self.cleaned_data['wypozyczalny']:
                 raise forms.ValidationError("Ten eksponat jest zbyt cenny by go wypożyczyć.")
             wypozyczony_check(id_w, id_e, tytul)
-        # TODO dokończyć + refactor
+        elif stan == 'w ekspozycji':
+            ekspozycja_check(id_w, id_e, tytul)
+        else:
+            magazyn_check(tytul)
 
 
 @admin.register(Eksponat)
@@ -163,3 +192,7 @@ class InstytucjaAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return True
+
+
+admin.site.unregister(Group)
+admin.site.unregister(User)
